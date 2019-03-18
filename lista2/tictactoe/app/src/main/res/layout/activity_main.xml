@@ -8,17 +8,18 @@
         tools:context=".MainActivity" android:gravity="center" android:background="@color/colorBackground">
     <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:layout_weight="3" android:gravity="center">
+            android:layout_height="match_parent" android:layout_weight="4" android:gravity="center"
+    >
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
-                android:text="User: 0 \nComputer: 0" android:textColor="@color/buttonColor"
+                android:text="User: 0 \nBot: 0" android:textColor="@color/buttonColor"
                 android:fontFamily="@font/lato"/>
     </TableRow>
     <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent" android:layout_weight="1" android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp">
+            android:layout_marginRight="12dp" android:layout_marginTop="25dp">
         <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -192,7 +193,7 @@
     </TableRow>
     <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:layout_weight="3" android:gravity="center">
+            android:layout_height="match_parent" android:layout_weight="4" android:gravity="center">
         <Button
                 android:text="RESET"
                 android:layout_width="wrap_content"

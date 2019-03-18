@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.max
 
 val userSymbol = State.X
 val computerSymbol = State.O
@@ -65,6 +66,48 @@ class GameManager : FieldManager(){
             if (idOList.containsAll(tactic)) return State.O
         }
         return State.EMPTY
+    }
+
+    fun checkIfPlayerIsWinning(): Int? {
+        val allPlayerFields = fieldMap.filter { it.value== userSymbol }.keys
+        for (tactic in winTactics) {
+            val intersect = allPlayerFields.intersect(tactic)
+            if (intersect.size==4) {
+                return tactic.minus(intersect).first()
+            }
+        }
+        return null
+    }
+
+    fun bestLine(): List<Int>? {
+        val computerFields = fieldMap.filter { it.value== computerSymbol }.keys
+        val userFields = fieldMap.filter { it.value== userSymbol }.keys
+        var maxLine : Pair<Int, Set<Int>>? = null
+        for (i in 0..20 step 5) {
+            if((i..i+4).intersect(userFields).isEmpty()) {
+                val numOfSymbolInLine = (i..i+4).intersect(computerFields).size
+                if (maxLine==null || numOfSymbolInLine > maxLine.first)
+                    maxLine = Pair(numOfSymbolInLine, (i..i+4).toSet())
+            }
+        }
+        for (i in 0..4) {
+            if(setOf(i, i+5, i+10, i+15, i+20).intersect(userFields).isEmpty()) {
+                val numOfSymbolInLine = setOf(i, i+5, i+10, i+15, i+20).intersect(computerFields).size
+                if (maxLine==null || numOfSymbolInLine > maxLine.first)
+                    maxLine = Pair(numOfSymbolInLine, setOf(i, i+5, i+10, i+15, i+20))
+            }
+        }
+        if(setOf(0, 6, 12, 18, 24).intersect(userFields).isEmpty()) {
+            val numOfSymbolInLine = setOf(0, 6, 12, 18, 24).intersect(computerFields).size
+            if (maxLine==null || numOfSymbolInLine > maxLine.first)
+                maxLine = Pair(numOfSymbolInLine, setOf(0, 6, 12, 18, 24))
+        }
+        if(setOf(4, 8, 12, 16, 20).intersect(userFields).isEmpty()) {
+            val numOfSymbolInLine = setOf(4, 8, 12, 16, 20).intersect(computerFields).size
+            if (maxLine==null || numOfSymbolInLine > maxLine.first)
+                maxLine = Pair(numOfSymbolInLine, setOf(4, 8, 12, 16, 20))
+        }
+        return maxLine?.second?.toList()
     }
 
     fun userClick(b: Button) {
