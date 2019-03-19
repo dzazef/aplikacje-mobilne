@@ -12,7 +12,7 @@
     >
         <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
+                android:layout_height="wrap_content" android:id="@+id/scoreText" android:textAlignment="center"
                 android:text="User: 0 \nBot: 0" android:textColor="@color/buttonColor"
                 android:fontFamily="@font/lato"/>
     </TableRow>
@@ -200,5 +200,11 @@
                 android:layout_height="wrap_content" android:id="@+id/button2"
                 android:background="@drawable/button_rounded"
                 android:fontFamily="@font/lato" android:onClick="onResetClick"/>
+        <Button
+                android:text="Debug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/button3"
+                android:background="@drawable/button_rounded" android:fontFamily="@font/lato"
+                android:onClick="checkLog" android:visibility="gone"/>
     </TableRow>
 </TableLayout>

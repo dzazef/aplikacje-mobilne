@@ -2,14 +2,16 @@ package com.example.tictactoe
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.math.max
 
 val userSymbol = State.X
 val computerSymbol = State.O
+
+var userScore = 0
+var computerScore = 0
 
 enum class State {
     O, X, EMPTY;
@@ -19,7 +21,7 @@ open class FieldManager {
     private var field = 0
     val fieldMap : MutableMap<Int, State> = mutableMapOf()
     val buttonSet : MutableSet<Pair<Int, Button>> = mutableSetOf()
-    var weightMap : MutableSet<Pair<Int, Int>> = mutableSetOf(
+    var weightMap : MutableMap<Int, Int> = mutableMapOf(
         0 to 12, 1 to 8, 2 to 8, 3 to 8, 4 to 12,
         5 to 8, 6 to 12, 7 to 8, 8 to 12, 9 to 8,
         10 to 8, 11 to 8, 12 to 16, 13 to 8, 14 to 8,
@@ -73,7 +75,12 @@ class GameManager : FieldManager(){
         for (tactic in winTactics) {
             val intersect = allPlayerFields.intersect(tactic)
             if (intersect.size==4) {
-                return tactic.minus(intersect).first()
+                val possibleField = tactic.minus(intersect).first()
+                if (fieldMap[possibleField]==State.EMPTY) {
+                    Log.d("INFO", "User is almost winning...")
+                    Log.d("TACTIC", "Choose field no $possibleField")
+                    return possibleField
+                }
             }
         }
         return null
@@ -107,23 +114,61 @@ class GameManager : FieldManager(){
             if (maxLine==null || numOfSymbolInLine > maxLine.first)
                 maxLine = Pair(numOfSymbolInLine, setOf(4, 8, 12, 16, 20))
         }
+        Log.d("INFO", "best line: "+maxLine?.second?.toString())
         return maxLine?.second?.toList()
+    }
+
+    fun chooseField(): Int? {
+        val field = checkIfPlayerIsWinning()
+        if (field!=null) {
+            return field
+        } else {
+            var bestLine = bestLine()
+            if (bestLine!=null) {
+                bestLine = bestLine.filter { e -> fieldMap[e]==State.EMPTY } //wyrzuć niepotrzebne pola
+                var pair : Pair<Int, Int>? = null
+                for (f in bestLine) {
+                    if (pair==null) {
+                        pair = Pair(f, weightMap[f]!!)
+                    } else {
+                        if (weightMap[f]!! > pair.second) {
+                            pair = Pair(f, weightMap[f]!!)
+                        }
+                    }
+                }
+                return pair?.first
+            } else {
+                val allPossibleFields = fieldMap.filter { it.value==State.EMPTY }.keys
+                var pair : Pair<Int, Int>? = null
+                for (f in allPossibleFields) {
+                    if (pair==null) {
+                        pair = Pair(f, weightMap[f]!!)
+                    } else {
+                        if (weightMap[f]!! > pair.second) {
+                            pair = Pair(f, weightMap[f]!!)
+                        }
+                    }
+                }
+                return pair?.first
+            }
+        }
     }
 
     fun userClick(b: Button) {
         val id = buttonSet.first { it.second==b }.first
         if (fieldMap[id]==State.EMPTY) {
-            if (userTurn) {
-                updateFields(id, userSymbol)
-                b.text = getStateById(id).toString()
-                userTurn = !userTurn
+            updateFields(id, userSymbol)
+            b.text = userSymbol.toString()
+
+            val field = chooseField()
+            if (field!=null) {
+                Log.d("BOT", "chosenField: $field")
+                updateFields(field, computerSymbol)
+                buttonSet.first { it.first==field }.second.text = getStateById(field).toString()
             } else {
-                updateFields(id, computerSymbol)
-                b.text = getStateById(id).toString()
-                userTurn = !userTurn
+                Log.d("BOT", "Can't find any field! Perhaps the game is over?")
             }
         }
-
     }
 
     fun resetFields() {
@@ -132,13 +177,15 @@ class GameManager : FieldManager(){
     }
 }
 
+
+
 val g = GameManager()
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        for (i in 1..30)
+        for (i in 0..24)
             g.addField()
         g.buttonSet.addAll(setOf(
             0 to button1_1, 1 to button1_2, 2 to button1_3, 3 to button1_4, 4 to button1_5,
@@ -149,19 +196,34 @@ class MainActivity : AppCompatActivity() {
         ))
     }
 
+    fun checkLog(view: View) {
+        g.checkIfPlayerIsWinning()
+        g.bestLine()
+    }
+
     fun onClick(view: View) {
         val button = findViewById<Button>(view.id)
         g.userClick(button)
-        when(g.checkWin()) {
-            State.X ->  {
-                Toast.makeText(this, "X Won", Toast.LENGTH_SHORT).show()
+        when (g.checkWin()) {
+            State.EMPTY -> Unit
+            State.X -> {
+                if (computerSymbol==State.X) {
+                    computerScore++
+                } else {
+                    userScore++
+                }
+                scoreText.text = "User: $userScore\nBot: $computerScore"
                 g.resetFields()
             }
             State.O ->  {
-                Toast.makeText(this, "O Won", Toast.LENGTH_SHORT).show()
+                if (computerSymbol==State.O) {
+                    computerScore++
+                } else {
+                    userScore++
+                }
+                scoreText.text = "User: $userScore\nBot: $computerScore"
                 g.resetFields()
             }
-            else -> Unit
         }
     }
 
