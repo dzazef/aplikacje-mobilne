@@ -113,12 +113,12 @@ class MainActivity : AppCompatActivity() {
         if (!wordManager.change()) whichImage++
         when (checkHangman()) {
             State.LOST -> {
+                Toast.makeText(this, "YOU LOST! :( Word: ${wordManager.currentWord}", Toast.LENGTH_SHORT).show()
                 reset()
-                Toast.makeText(this, "YOU LOST :(", Toast.LENGTH_SHORT).show()
             }
             State.WON -> {
-                reset()
                 Toast.makeText(this, "YOU WON :)", Toast.LENGTH_SHORT).show()
+                reset()
             }
             State.UNDEFINED -> Unit
         }
