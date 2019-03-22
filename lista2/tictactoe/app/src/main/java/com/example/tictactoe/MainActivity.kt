@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -20,7 +21,7 @@ enum class State {
 open class FieldManager {
     private var field = 0
     val fieldMap : MutableMap<Int, State> = mutableMapOf()
-    val buttonSet : MutableSet<Pair<Int, Button>> = mutableSetOf()
+    var buttonSet : Set<Pair<Int, Button>> = setOf()
     var weightMap : MutableMap<Int, Int> = mutableMapOf(
         0 to 12, 1 to 8, 2 to 8, 3 to 8, 4 to 12,
         5 to 8, 6 to 12, 7 to 8, 8 to 12, 9 to 8,
@@ -30,6 +31,10 @@ open class FieldManager {
 
     fun addField() {
         fieldMap[field++] = State.EMPTY
+    }
+
+    fun resetFieldMap() {
+        fieldMap.clear()
     }
 
     fun updateFields(id: Int, s: State) {
@@ -42,7 +47,6 @@ open class FieldManager {
 }
 
 class GameManager : FieldManager(){
-    var userTurn = true
 
     private val winTactics : List<List<Int>> =
         listOf(
@@ -118,7 +122,7 @@ class GameManager : FieldManager(){
         return maxLine?.second?.toList()
     }
 
-    fun chooseField(): Int? {
+    private fun chooseField(): Int? {
         val field = checkIfPlayerIsWinning()
         if (field!=null) {
             return field
@@ -164,7 +168,9 @@ class GameManager : FieldManager(){
             if (field!=null) {
                 Log.d("BOT", "chosenField: $field")
                 updateFields(field, computerSymbol)
-                buttonSet.first { it.first==field }.second.text = getStateById(field).toString()
+                val b = buttonSet.first { it.first==field }.second
+                val t = getStateById(field).toString()
+                b.text = t
             } else {
                 Log.d("BOT", "Can't find any field! Perhaps the game is over?")
             }
@@ -179,21 +185,28 @@ class GameManager : FieldManager(){
 
 
 
-val g = GameManager()
 
 class MainActivity : AppCompatActivity() {
+    lateinit var g : GameManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
+
+    override fun onStart() {
+        g = GameManager()
+        super.onStart()
+        g.resetFieldMap()
         for (i in 0..24)
             g.addField()
-        g.buttonSet.addAll(setOf(
+        g.buttonSet = setOf(
             0 to button1_1, 1 to button1_2, 2 to button1_3, 3 to button1_4, 4 to button1_5,
             5 to button2_1, 6 to button2_2, 7 to button2_3, 8 to button2_4, 9 to button2_5,
             10 to button3_1, 11 to button3_2, 12 to button3_3, 13 to button3_4, 14 to button3_5,
             15 to button4_1, 16 to button4_2, 17 to button4_3, 18 to button4_4, 19 to button4_5,
             20 to button5_1, 21 to button5_2, 22 to button5_3, 23 to button5_4, 24 to button5_5
-        ))
+        )
     }
 
     fun checkLog(view: View) {
@@ -202,6 +215,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onClick(view: View) {
+        Log.d("INFO", "clicked on field")
         val button = findViewById<Button>(view.id)
         g.userClick(button)
         when (g.checkWin()) {
