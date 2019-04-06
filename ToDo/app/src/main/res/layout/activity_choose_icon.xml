@@ -9,7 +9,7 @@
 
     <TextView
             style="@style/Text.Primary"
-            android:text="@string/choose_icon"
+            android:text="@string/set_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/icon_txt_title" app:layout_constraintTop_toTopOf="parent"

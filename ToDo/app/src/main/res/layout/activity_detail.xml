@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/text_date_time"
                 tools:layout_editor_absoluteX="0dp"
-                tools:text="godzina data"
+                tools:text="00/00/00 00:00"
         />
     </LinearLayout>
     <LinearLayout
@@ -36,7 +36,7 @@
                 android:id="@+id/text_message"
                 android:background="@color/lightYellow"
                 tools:layout_editor_absoluteX="0dp"
-                android:padding="10dp" android:text="tetstete" android:gravity="top|left"/>
+                android:padding="10dp" android:text="Unable to load message" android:gravity="top|left"/>
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
@@ -52,7 +52,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/text_priority"
                 tools:layout_editor_absoluteX="0dp"
-                tools:text="priorytet"
+                tools:text="0"
         />
     </LinearLayout>
 

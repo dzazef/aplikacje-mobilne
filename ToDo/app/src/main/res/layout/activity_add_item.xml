@@ -77,7 +77,7 @@
                 app:layout_constraintHorizontal_bias="0.03" android:onClick="onDateClick"/>
         <TextView
                 style="@style/Text.Primary"
-                android:text="13/04/19"
+                android:text="00/00/00"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp" android:id="@+id/add_text_date"
                 android:onClick="onDateClick"
@@ -97,7 +97,7 @@
                 app:layout_constraintHorizontal_bias="0.8" android:onClick="onTimeClick"/>
         <TextView
                 style="@style/Text.Primary"
-                android:text="02:43"
+                android:text="00:00"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp" android:id="@+id/add_text_time"
                 app:layout_constraintTop_toTopOf="parent"
@@ -154,7 +154,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.08" android:text="Set icon:"/>
+                app:layout_constraintHorizontal_bias="0.08" android:text="@string/set_icon"/>
         <ImageView
                 android:onClick="onImageClick"
                 android:layout_width="40dp"
