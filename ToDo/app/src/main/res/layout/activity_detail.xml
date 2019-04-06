@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.DetailActivity"
+        android:orientation="vertical">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_weight="28" android:gravity="center_horizontal">
+        <ImageView
+                android:layout_width="20dp"
+                android:layout_height="match_parent" app:srcCompat="@drawable/ic_baseline_date_range_24px"
+                android:id="@+id/imageView2"
+                android:layout_marginLeft="5dp" android:layout_marginRight="5dp"/>
+        <TextView
+                style="@style/Text.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/text_date_time"
+                tools:layout_editor_absoluteX="0dp"
+                tools:text="godzina data"
+        />
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_weight="5">
+        <TextView
+                style="@style/Text.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/text_message"
+                android:background="@color/lightYellow"
+                tools:layout_editor_absoluteX="0dp"
+                android:padding="10dp" android:text="tetstete" android:gravity="top|left"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_weight="28" android:gravity="center_horizontal">
+        <ImageView
+                android:layout_width="20dp"
+                android:layout_height="match_parent" app:srcCompat="@drawable/ic_baseline_swap_vert_24px"
+                android:id="@+id/imageView3" android:layout_marginLeft="5dp" android:layout_marginRight="5dp"/>
+        <TextView
+                style="@style/Text.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/text_priority"
+                tools:layout_editor_absoluteX="0dp"
+                tools:text="priorytet"
+        />
+    </LinearLayout>
+
+</LinearLayout>

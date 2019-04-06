@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ToDo</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="choose_icon">Choose icon:</string>
+</resources>
