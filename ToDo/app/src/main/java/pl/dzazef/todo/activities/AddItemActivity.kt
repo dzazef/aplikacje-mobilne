@@ -19,7 +19,7 @@ import java.util.*
 
 class AddItemActivity : AppCompatActivity() {
     var color : Int = pl.dzazef.todo.R.color.lightYellow
-    var icon : Int = R.drawable.ic_baseline_done_24px
+    private var icon : Int = R.drawable.ic_baseline_done_24px
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +92,7 @@ class AddItemActivity : AppCompatActivity() {
     }
 
     fun updateDate(cal: Calendar) {
-        val myFormat = "dd/MM/yy" //In which you need put here
+        val myFormat = "dd/MM/yy"
         val date = SimpleDateFormat(myFormat, Locale.US)
         add_text_date.text = date.format(cal.time)
     }
