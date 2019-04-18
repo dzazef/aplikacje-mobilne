@@ -1,7 +1,9 @@
 package pl.dzazef.gallery
 
-import android.support.v7.app.AppCompatActivity
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -9,24 +11,40 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_main.*
 
+private const val REQUEST_IMAGE_CAPTURE = 9001
+private const val REQUEST_PERMISSIONS = 10001
+private val PERMISSIONS = arrayOf(
+    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    android.Manifest.permission.CAMERA
+)
+
 class MainActivity : AppCompatActivity() {
-    lateinit var itemList : MutableList<Item>
+    var itemList : MutableList<Item> = mutableListOf()
     lateinit var inflater : LayoutInflater
     lateinit var recyclerView : RecyclerView
     lateinit var adapter : RecyclerViewAdapter
+    lateinit var cameraController: CameraController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setRecyclerView()
-        addItemToRecyclerView(Item())
+        cameraController = CameraController(this, packageManager)
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
+//        addItemToRecyclerView(Item())
     }
 
     fun setRecyclerView() {
         recyclerView = main_rec
-        this.itemList = mutableListOf()
-        val layoutManager = GridLayoutManager(this, 2)
-        recyclerView.layoutManager = layoutManager
+        recyclerView.layoutManager = GridLayoutManager(this, 3)
         this.adapter = RecyclerViewAdapter()
         recyclerView.adapter = adapter
     }
@@ -57,4 +75,22 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        cameraController.onRequestPermissionsResult(requestCode, grantResults)
+    }
+
+    fun onAddClick(view: View) {
+        cameraController.onClick()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val imageBitmap = data!!.extras!!.get("data") as Bitmap
+            imageView.setImageBitmap(imageBitmap)
+        }
+    }
+
 }
