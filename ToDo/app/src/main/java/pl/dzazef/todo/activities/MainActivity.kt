@@ -24,7 +24,6 @@ const val MAX_PRIORITY = 9
 
 class MainActivity : AppCompatActivity(), ActivityInterface {
     lateinit var itemList : MutableList<Item>
-    private lateinit var inflater : LayoutInflater
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter : RecyclerViewAdapter
     private var sortBy = Sort.PRIORITY
@@ -32,10 +31,9 @@ class MainActivity : AppCompatActivity(), ActivityInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(pl.dzazef.todo.R.layout.activity_main)
-
         recyclerView = main_rec
-        inflater = layoutInflater
 
+        setRecyclerView()
         recyclerView.setOnSwipeToDelete()
     }
 
