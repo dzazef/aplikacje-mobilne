@@ -1,4 +1,6 @@
 package pl.dzazef.gallery
 
-class Item {
-}
+import android.net.Uri
+import java.io.File
+
+data class Item(val file: Uri?)

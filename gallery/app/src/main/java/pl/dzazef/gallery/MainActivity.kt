@@ -6,18 +6,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
-
-private const val REQUEST_IMAGE_CAPTURE = 9001
-private const val REQUEST_PERMISSIONS = 10001
-private val PERMISSIONS = arrayOf(
-    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    android.Manifest.permission.CAMERA
-)
 
 class MainActivity : AppCompatActivity() {
     var itemList : MutableList<Item> = mutableListOf()
@@ -31,16 +25,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setRecyclerView()
         cameraController = CameraController(this, packageManager)
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
-//        addItemToRecyclerView(Item())
     }
+
 
     fun setRecyclerView() {
         recyclerView = main_rec
@@ -50,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addItemToRecyclerView(item: Item) {
+        Log.d("INFO", "Adding item to root_rcv")
         itemList.add(item)
         adapter.notifyDataSetChanged()
     }
@@ -66,9 +53,13 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(vh: ViewHolder, p: Int) {
             val item : Item = itemList[p]
+            Log.d("INFO", "Setting Uri: ${item.file}")
+            vh.itemImageView.setImageURI(item.file)
         }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+            val itemImageView : ImageView = itemView.findViewById(R.id.item_imv)
+
             override fun onClick(p0: View?) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
@@ -87,9 +78,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data!!.extras!!.get("data") as Bitmap
-            imageView.setImageBitmap(imageBitmap)
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                REQUEST_IMAGE_CAPTURE -> {
+                    val imageBitmap = data!!.extras!!.get("uri") as Bitmap
+                    imageView.setImageBitmap(imageBitmap)
+                }
+                REQUEST_TAKE_PHOTO -> {
+                    cameraController.galleryAddPic()
+                }
+            }
+
         }
     }
 
