@@ -3,6 +3,7 @@ package pl.dzazef.gallery
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -12,12 +13,19 @@ import android.util.Log
 import android.widget.Toast
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Class responsible for managing Camera interface and saving photos
+ */
 class CameraController(private val appCompatActivity: MainActivity, private val packageManager: PackageManager) {
-    lateinit var currentPhotoPath : String
+    private lateinit var currentPhotoPath : String
 
+    /**
+     * Permission request callback
+     */
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
         when(requestCode) {
             REQUEST_PERMISSIONS -> {
@@ -31,6 +39,9 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
         }
     }
 
+    /**
+     * Method creating File for photo
+     */
     @Throws(IOException::class)
     private fun createImageFile(): File {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
@@ -40,18 +51,21 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
             ".jpg",
             storageDir
         ).apply {
-            Log.d("INFO", "Created file: ${this.absolutePath}")
+            Log.d("DEBUG", "Created file: ${this.absolutePath}")
             currentPhotoPath = absolutePath
         }
     }
 
+    /**
+     * Method responsible for taking photos
+     */
     private fun startCamera() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
-                    Log.d("INFO", "Error while creating file - aborting")
+                    Log.d("DEBUG", "Error while creating file - aborting")
                     return
                 }
                 photoFile?.also {
@@ -67,6 +81,9 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
         }
     }
 
+    /**
+     * Method responsible for adding photo to recycler view(gallery)
+     */
     fun galleryAddPic() {
         Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
             val f = File(currentPhotoPath)
@@ -75,7 +92,31 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
         }
     }
 
+    /**
+     * Method returning rotation of photo at given path
+     */
+    fun getRotation(path: String?): Float {
+        var rotate = 0f
+        try {
+            val exif: ExifInterface?
+            exif = ExifInterface(path)
+            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
+            rotate = when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                else -> 0f
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return rotate
+    }
 
+    /**
+     * Method called on add photo click.
+     * Method has to check if user has needed permissions.
+     */
     fun onClick() {
         if(!checkPermissions(appCompatActivity, PERMISSIONS))
             ActivityCompat.requestPermissions(appCompatActivity, PERMISSIONS, REQUEST_PERMISSIONS)
@@ -83,6 +124,9 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
             startCamera()
     }
 
+    /**
+     * Method checking if user has all needed permissions
+     */
     private fun checkPermissions(context: Context?, permissions: Array<String>): Boolean {
         if (context != null) {
             for (p in permissions) {

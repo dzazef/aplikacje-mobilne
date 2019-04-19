@@ -25,18 +25,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setRecyclerView()
         cameraController = CameraController(this, packageManager)
+        Log.d("DEBUG", "Calling on create")
     }
 
 
     fun setRecyclerView() {
         recyclerView = main_rec
-        recyclerView.layoutManager = GridLayoutManager(this, 3)
+        recyclerView.layoutManager = GridLayoutManager(this, VERTICAL_SPAN_COUNT)
         this.adapter = RecyclerViewAdapter()
         recyclerView.adapter = adapter
     }
 
     fun addItemToRecyclerView(item: Item) {
-        Log.d("INFO", "Adding item to root_rcv")
+        Log.d("DEBUG", "Adding item to root_rcv")
         itemList.add(item)
         adapter.notifyDataSetChanged()
     }
@@ -53,8 +54,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(vh: ViewHolder, p: Int) {
             val item : Item = itemList[p]
-            Log.d("INFO", "Setting Uri: ${item.file}")
+            Log.d("DEBUG", "Setting Uri: ${item.file}")
             vh.itemImageView.setImageURI(item.file)
+            vh.itemImageView.rotation = cameraController.getRotation(item.file!!.path)
         }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         cameraController.onRequestPermissionsResult(requestCode, grantResults)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onAddClick(view: View) {
         cameraController.onClick()
     }
