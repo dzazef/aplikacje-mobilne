@@ -23,24 +23,9 @@ import java.util.*
  * Class responsible for managing Camera interface and saving photos
  */
 class CameraController(private val appCompatActivity: MainActivity, private val packageManager: PackageManager) {
+    val permissionController = PermissionController(appCompatActivity, this)
     var currentPhotoPath = ""
 
-    /**
-     * Permission request callback
-     */
-    fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
-        Log.d("DEBUG2", "onRequestPermissionsResult")
-        when(requestCode) {
-            REQUEST_PERMISSIONS -> {
-                if (!(grantResults.isNotEmpty() && grantResults.all { it== PackageManager.PERMISSION_GRANTED } )) {
-                    Toast.makeText(appCompatActivity, "You have to grant permissions to add photos", Toast.LENGTH_SHORT).show()
-                } else {
-                    startCamera()
-                }
-            }
-            else -> Unit
-        }
-    }
 
     /**
      * Method creating File for photo
@@ -63,7 +48,7 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
     /**
      * Method responsible for taking photos
      */
-    private fun startCamera() {
+    fun startCamera() {
         Log.d("DEBUG2", "startCamera")
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
@@ -101,7 +86,7 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
                 inSampleSize = scaleFactor
             }
             val bm = BitmapFactory.decodeFile(path, bmOptions)
-            if (bm!=null) appCompatActivity.addItemToRecyclerView(Item(bm, path))
+            if (bm!=null) appCompatActivity.addMultipleItemToRecyclerView(Item(bm, path))
     }
 
     /**
@@ -126,29 +111,12 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
         return rotate
     }
 
-    /**
-     * Method called on add photo click.
-     * Method has to check if user has needed permissions.
-     */
+
     fun onClick() {
-        Log.d("DEBUG2", "onClick")
-        if(!checkPermissions(appCompatActivity, PERMISSIONS))
-            ActivityCompat.requestPermissions(appCompatActivity, PERMISSIONS, REQUEST_PERMISSIONS)
-        else
-            startCamera()
+        permissionController.onClick()
     }
 
-    /**
-     * Method checking if user has all needed permissions
-     */
-    private fun checkPermissions(context: Context?, permissions: Array<String>): Boolean {
-        Log.d("DEBUG2", "checkPermissions")
-        if (context != null) {
-            for (p in permissions) {
-                if (ActivityCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_GRANTED)
-                    return false
-            }
-        }
-        return true
+    fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
+        permissionController.onRequestPermissionsResult(requestCode, grantResults)
     }
 }

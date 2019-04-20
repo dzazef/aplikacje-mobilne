@@ -3,7 +3,6 @@ package pl.dzazef.gallery
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -37,12 +36,23 @@ class MainActivity : AppCompatActivity() {
         Thread{
             Log.d("DEBUG1", "Adding pictures from ${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}")
             val files = getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    Thread{cameraController.galleryAddPic(file.absolutePath)}.start()
-                }
-            }
+            val threads = mutableListOf<Thread>()
+            files?.forEach { file -> Thread { cameraController.galleryAddPic(file.absolutePath) }.also { threads.add(it) }.start() }
+            threads.forEach{ it.join() }
+            finishAddMultipleItemToRecyclerView()
         }.start()
+    }
+
+    fun addMultipleItemToRecyclerView(item: Item) {
+        Log.d("DEBUG2", "addMultipleItemToRecyclerView")
+        itemList.add(item)
+        runOnUiThread { adapter.notifyItemInserted(itemList.size) }
+    }
+
+    fun finishAddMultipleItemToRecyclerView() {
+        Log.d("DEBUG2", "finishAddMultipleItemToRecyclerView")
+        itemList.sort()
+        runOnUiThread { adapter.notifyDataSetChanged() }
     }
 
     fun setRecyclerView() {
@@ -53,16 +63,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-    val mutex = ReentrantLock()
-    fun addItemToRecyclerView(item: Item) {
-        Log.d("DEBUG2", "addItemToRecyclerView")
-        Log.d("DEBUG1", "Adding item to root_rcv")
-        mutex.lock()
-        itemList.add(item)
-        itemList.sort()
-        mutex.unlock()
-        runOnUiThread { adapter.notifyDataSetChanged() }
-    }
 
     inner class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
         override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity() {
                 when (requestCode) {
                     REQUEST_TAKE_PHOTO -> {
                         cameraController.galleryAddPic(cameraController.currentPhotoPath)
+                        finishAddMultipleItemToRecyclerView()
                     }
                 }
             }
