@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 
-class PermissionController(val appCompatActivity: AppCompatActivity, val cameraController: CameraController) {
+class PermissionController(private val appCompatActivity: AppCompatActivity, private val cameraController: CameraController) {
 
     /**
      * Method called on add photo click.
@@ -41,7 +41,7 @@ class PermissionController(val appCompatActivity: AppCompatActivity, val cameraC
     /**
      * Method checking if user has all needed permissions
      */
-    fun checkPermissions(context: Context?, permissions: Array<String>): Boolean {
+    private fun checkPermissions(context: Context?, permissions: Array<String>): Boolean {
         Log.d("DEBUG2", "checkPermissions")
         if (context != null) {
             for (p in permissions) {

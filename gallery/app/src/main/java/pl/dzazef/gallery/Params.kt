@@ -9,4 +9,5 @@ val PERMISSIONS = arrayOf(
     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
     android.Manifest.permission.CAMERA
 )
-const val VERTICAL_SPAN_COUNT = 3
+const val PORTRAIT_SPAN_COUNT = 3
+const val LANDSCAPE_SPAN_COUNT = 6

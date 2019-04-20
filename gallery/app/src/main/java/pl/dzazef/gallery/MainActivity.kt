@@ -1,6 +1,7 @@
 package pl.dzazef.gallery
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +14,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.util.concurrent.locks.ReentrantLock
 
 class MainActivity : AppCompatActivity() {
     var itemList : MutableList<Item> = mutableListOf()
@@ -58,7 +58,10 @@ class MainActivity : AppCompatActivity() {
     fun setRecyclerView() {
         Log.d("DEBUG2", "setRecyclerView")
         recyclerView = main_rec
-        recyclerView.layoutManager = GridLayoutManager(this, VERTICAL_SPAN_COUNT)
+        recyclerView.layoutManager = when (resources.configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> GridLayoutManager(this, LANDSCAPE_SPAN_COUNT)
+            else -> GridLayoutManager(this, PORTRAIT_SPAN_COUNT)
+        }
         this.adapter = RecyclerViewAdapter()
         recyclerView.adapter = adapter
     }

@@ -112,11 +112,6 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
     }
 
 
-    fun onClick() {
-        permissionController.onClick()
-    }
-
-    fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
-        permissionController.onRequestPermissionsResult(requestCode, grantResults)
-    }
+    fun onClick() = permissionController.onClick()
+    fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) = permissionController.onRequestPermissionsResult(requestCode, grantResults)
 }
