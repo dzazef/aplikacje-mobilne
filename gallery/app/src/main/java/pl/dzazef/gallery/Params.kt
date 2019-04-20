@@ -19,4 +19,4 @@ const val EXTRA_RATING = "RATING"
 //SHARED PREFERENCES
 const val PREF_NAME = "pl.dzazef.gallery"
 const val PREF_RATING = "RATING"
-const val PREF_DESCRIPTION = "RATING"
+const val PREF_DESCRIPTION = "DESCRIPTION"
