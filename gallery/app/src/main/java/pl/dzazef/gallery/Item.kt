@@ -1,6 +1,5 @@
 package pl.dzazef.gallery
 
-import android.net.Uri
-import java.io.File
+import android.graphics.Bitmap
 
-data class Item(val file: Uri?)
+data class Item(val bitmap: Bitmap, val path: String)
