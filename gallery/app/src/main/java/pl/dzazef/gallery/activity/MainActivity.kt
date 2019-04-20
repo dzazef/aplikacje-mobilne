@@ -1,10 +1,11 @@
-package pl.dzazef.gallery
+package pl.dzazef.gallery.activity
 
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -13,6 +14,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
+import pl.dzazef.gallery.*
+import pl.dzazef.gallery.camera.CameraController
+import pl.dzazef.gallery.camera.Utils
+import pl.dzazef.gallery.data.Item
+import pl.dzazef.gallery.data.sort
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var recyclerView : RecyclerView
     lateinit var adapter : RecyclerViewAdapter
     lateinit var cameraController: CameraController
+    val sharedPreferencesManager = SharedPreferencesManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("DEBUG2", "onCreate")
@@ -84,17 +91,29 @@ class MainActivity : AppCompatActivity() {
             val item : Item = itemList[p]
             Log.d("DEBUG1", "Binding, path: ${item.path}")
             vh.itemImageView.setImageBitmap(item.bitmap)
-            vh.itemImageView.rotation = cameraController.getRotation(item.path)
+            vh.itemImageView.rotation = Utils().getRotation(item.path)
+            vh.cardView.tag = item.path
         }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
             val itemImageView : ImageView = itemView.findViewById(R.id.item_imv)
+            val cardView : CardView = itemView.findViewById(R.id.item_card)
 
-            override fun onClick(p0: View?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            init {
+                cardView.setOnClickListener(this)
             }
 
+            override fun onClick(p0: View?) {
+                callDetailActivity(itemList[this.adapterPosition])
+            }
         }
+    }
+
+    fun callDetailActivity(item: Item) {
+        Log.d("DEBUG2", "onItemClick")
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(EXTRA_FILE_PATH, item.path)
+        startActivity(intent)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -131,6 +150,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onSaveInstanceState(outState: Bundle?) {
         Log.d("DEBUG2", "onSaveInstanceState")

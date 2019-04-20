@@ -1,21 +1,21 @@
-package pl.dzazef.gallery
+package pl.dzazef.gallery.camera
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.FileProvider
 import android.util.Log
-import android.widget.Toast
+import pl.dzazef.gallery.IMAGE_VIEW_DIMENSION
+import pl.dzazef.gallery.PermissionController
+import pl.dzazef.gallery.REQUEST_TAKE_PHOTO
+import pl.dzazef.gallery.activity.MainActivity
+import pl.dzazef.gallery.data.Item
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -71,45 +71,32 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
         }
     }
 
+    fun getBitMap(path: String): Bitmap? {
+        Log.d("DEBUG2", "galleryAddPic")
+        val bmOptions = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+            BitmapFactory.decodeFile(path, this)
+            val photoW: Int = outWidth
+            val photoH: Int = outHeight
+            val scaleFactor: Int = Math.min(photoW, photoH)/ IMAGE_VIEW_DIMENSION
+            inJustDecodeBounds = false
+            inSampleSize = scaleFactor
+        }
+        return BitmapFactory.decodeFile(path, bmOptions)
+    }
+
     /**
      * Method responsible for adding photo to recycler view(gallery)
      */
     fun galleryAddPic(path: String) {
-            Log.d("DEBUG2", "galleryAddPic")
-            val bmOptions = BitmapFactory.Options().apply {
-                inJustDecodeBounds = true
-                BitmapFactory.decodeFile(path, this)
-                val photoW: Int = outWidth
-                val photoH: Int = outHeight
-                val scaleFactor: Int = Math.min(photoW, photoH)/IMAGE_VIEW_DIMENSION
-                inJustDecodeBounds = false
-                inSampleSize = scaleFactor
-            }
-            val bm = BitmapFactory.decodeFile(path, bmOptions)
-            if (bm!=null) appCompatActivity.addMultipleItemToRecyclerView(Item(bm, path))
+        val bitmap = getBitMap(path)
+        if (bitmap != null) {
+            val item = Item(bitmap, path, null, null)
+            appCompatActivity.addMultipleItemToRecyclerView(item)
+        }
     }
 
-    /**
-     * Method returning rotation of photo at given path
-     */
-    fun getRotation(path: String?): Float {
-        Log.d("DEBUG2", "getRotation")
-        var rotate = 0f
-        try {
-            val exif: ExifInterface?
-            exif = ExifInterface(path)
-            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
-            rotate = when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-                else -> 0f
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return rotate
-    }
+
 
 
     fun onClick() = permissionController.onClick()

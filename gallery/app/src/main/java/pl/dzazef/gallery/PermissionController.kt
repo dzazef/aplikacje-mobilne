@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import pl.dzazef.gallery.camera.CameraController
 
 class PermissionController(private val appCompatActivity: AppCompatActivity, private val cameraController: CameraController) {
 

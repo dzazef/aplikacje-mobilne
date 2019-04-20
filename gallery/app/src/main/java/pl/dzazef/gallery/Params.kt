@@ -1,8 +1,9 @@
 package pl.dzazef.gallery
 
-const val REQUEST_IMAGE_CAPTURE = 9001
-const val REQUEST_TAKE_PHOTO = 9002
+//REQUEST CODES
+const val REQUEST_TAKE_PHOTO = 9001
 const val REQUEST_PERMISSIONS = 10001
+//OTHER
 const val IMAGE_VIEW_DIMENSION = 250
 val PERMISSIONS = arrayOf(
     android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -11,3 +12,4 @@ val PERMISSIONS = arrayOf(
 )
 const val PORTRAIT_SPAN_COUNT = 3
 const val LANDSCAPE_SPAN_COUNT = 6
+const val EXTRA_FILE_PATH = "FILE_PATH"
