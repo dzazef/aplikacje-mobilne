@@ -7,11 +7,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_detail.*
 import pl.dzazef.gallery.EXTRA_DESCRIPTION
@@ -19,7 +21,6 @@ import pl.dzazef.gallery.EXTRA_FILE_PATH
 import pl.dzazef.gallery.EXTRA_RATING
 import pl.dzazef.gallery.R
 import pl.dzazef.gallery.camera.Utils
-import pl.dzazef.gallery.controllers.SharedPreferencesController
 
 class DetailActivity : AppCompatActivity() {
     private var editable = false
@@ -44,11 +45,14 @@ class DetailActivity : AppCompatActivity() {
         }.start()
 //        Picasso.with(this).load(File(path)).into(imageView) - tried, too slow :C
         lastDescription = intent.getStringExtra(EXTRA_DESCRIPTION)
+
+        detail_rtb.rating = intent.getFloatExtra(EXTRA_RATING, 0f)
         detail_txt.text = lastDescription
+
         recentView = detail_txt
     }
 
-    fun onEditClick(v: View) {
+    fun onEditClick(@Suppress("UNUSED_PARAMETER") v: View) {
         val parent = recentView.parent as ViewGroup
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
         parent.removeView(recentView)
@@ -72,10 +76,10 @@ class DetailActivity : AppCompatActivity() {
 
     }
 
-    fun onSaveClick(v: View) {
+    fun onSaveClick(@Suppress("UNUSED_PARAMETER") v: View) {
         val intent = Intent()
         intent.putExtra(EXTRA_DESCRIPTION, lastDescription)
-        intent.putExtra(EXTRA_RATING, 2)
+        intent.putExtra(EXTRA_RATING, detail_rtb.rating)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

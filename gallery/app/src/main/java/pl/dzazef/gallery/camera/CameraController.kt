@@ -92,7 +92,7 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
     fun galleryAddPic(path: String) {
         val bitmap = getBitMap(path)
         if (bitmap != null) {
-            val item = Item(bitmap, path, null, null)
+            val item = Item(bitmap, path, 0f, null)
             SharedPreferencesController(appCompatActivity).restoreItemState(item)
             appCompatActivity.addMultipleItemToRecyclerView(item)
         }

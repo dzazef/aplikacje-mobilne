@@ -9,7 +9,6 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -24,10 +23,9 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
     var itemList : MutableList<Item> = mutableListOf()
-    lateinit var inflater : LayoutInflater
-    lateinit var recyclerView : RecyclerView
-    lateinit var adapter : RecyclerViewAdapter
-    lateinit var cameraController: CameraController
+    private lateinit var recyclerView : RecyclerView
+    private lateinit var adapter : RecyclerViewAdapter
+    private lateinit var cameraController: CameraController
     var itemToEdit : Item? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         reloadPhotos()
     }
 
-    fun reloadPhotos() {
+    private fun reloadPhotos() {
         Log.d("DEBUG2", "reloadPhotos")
         Thread{
             Log.d("DEBUG1", "Adding pictures from ${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}")
@@ -57,13 +55,13 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread { adapter.notifyItemInserted(itemList.size) }
     }
 
-    fun finishAddMultipleItemToRecyclerView() {
+    private fun finishAddMultipleItemToRecyclerView() {
         Log.d("DEBUG2", "finishAddMultipleItemToRecyclerView")
         itemList.sort()
         runOnUiThread { adapter.notifyDataSetChanged() }
     }
 
-    fun setRecyclerView() {
+    private fun setRecyclerView() {
         Log.d("DEBUG2", "setRecyclerView")
         recyclerView = main_rec
         recyclerView.layoutManager = when (resources.configuration.orientation) {
@@ -143,11 +141,8 @@ class MainActivity : AppCompatActivity() {
                         finishAddMultipleItemToRecyclerView()
                     }
                     REQUEST_EDIT_ITEM -> {
-                        val description = data!!.getStringExtra(EXTRA_DESCRIPTION)
-                        var rating : Int? = data.getIntExtra(EXTRA_RATING, -1)
-                        if (rating==-1) rating = null
-                        itemToEdit?.description = description
-                        itemToEdit?.rating = rating
+                        itemToEdit?.description = data!!.getStringExtra(EXTRA_DESCRIPTION)
+                        itemToEdit?.rating = data.getFloatExtra(EXTRA_RATING, 0f)
                         SharedPreferencesController(this).saveItemState(itemToEdit)
                     }
                 }

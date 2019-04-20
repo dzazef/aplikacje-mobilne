@@ -13,7 +13,7 @@ class SharedPreferencesController(private val appCompatActivity: AppCompatActivi
             val sharedPref = appCompatActivity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val editor = sharedPref.edit()
             if (item.description != null) editor.putString(PREF_DESCRIPTION+item.path, item.description)
-            if (item.rating != null) editor.putInt(PREF_RATING + item.path, item.rating!!)
+            editor.putFloat(PREF_RATING + item.path, item.rating)
             editor.apply()
         }
     }
@@ -21,7 +21,6 @@ class SharedPreferencesController(private val appCompatActivity: AppCompatActivi
     fun restoreItemState(item: Item) {
         val sharedPref = appCompatActivity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         item.description = sharedPref.getString(PREF_DESCRIPTION+item.path, null)
-        val rating = sharedPref.getInt(PREF_RATING+item.path, -1)
-        item.rating = if (rating==-1) null else rating
+        item.rating = sharedPref.getFloat(PREF_RATING+item.path, 0f)
     }
 }
