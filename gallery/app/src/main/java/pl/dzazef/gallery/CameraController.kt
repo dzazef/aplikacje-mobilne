@@ -90,7 +90,6 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
      * Method responsible for adding photo to recycler view(gallery)
      */
     fun galleryAddPic(path: String) {
-        Thread{
             Log.d("DEBUG2", "galleryAddPic")
             val bmOptions = BitmapFactory.Options().apply {
                 inJustDecodeBounds = true
@@ -103,8 +102,6 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
             }
             val bm = BitmapFactory.decodeFile(path, bmOptions)
             if (bm!=null) appCompatActivity.addItemToRecyclerView(Item(bm, path))
-        }.start()
-
     }
 
     /**

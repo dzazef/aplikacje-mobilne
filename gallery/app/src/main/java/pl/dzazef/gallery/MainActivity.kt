@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.concurrent.locks.ReentrantLock
 
 class MainActivity : AppCompatActivity() {
     var itemList : MutableList<Item> = mutableListOf()
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             val files = getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.listFiles()
             if (files != null) {
                 for (file in files) {
-                    cameraController.galleryAddPic(file.absolutePath)
+                    Thread{cameraController.galleryAddPic(file.absolutePath)}.start()
                 }
             }
         }.start()
@@ -52,11 +53,15 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
+    val mutex = ReentrantLock()
     fun addItemToRecyclerView(item: Item) {
         Log.d("DEBUG2", "addItemToRecyclerView")
         Log.d("DEBUG1", "Adding item to root_rcv")
+        mutex.lock()
         itemList.add(item)
-        runOnUiThread { adapter.notifyItemInserted(itemList.size) }
+        itemList.sort()
+        mutex.unlock()
+        runOnUiThread { adapter.notifyDataSetChanged() }
     }
 
     inner class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
