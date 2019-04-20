@@ -10,9 +10,10 @@ import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.util.Log
 import pl.dzazef.gallery.IMAGE_VIEW_DIMENSION
-import pl.dzazef.gallery.PermissionController
+import pl.dzazef.gallery.controllers.PermissionController
 import pl.dzazef.gallery.REQUEST_TAKE_PHOTO
 import pl.dzazef.gallery.activity.MainActivity
+import pl.dzazef.gallery.controllers.SharedPreferencesController
 import pl.dzazef.gallery.data.Item
 import java.io.File
 import java.io.IOException
@@ -23,7 +24,7 @@ import java.util.*
  * Class responsible for managing Camera interface and saving photos
  */
 class CameraController(private val appCompatActivity: MainActivity, private val packageManager: PackageManager) {
-    val permissionController = PermissionController(appCompatActivity, this)
+    private val permissionController = PermissionController(appCompatActivity, this)
     var currentPhotoPath = ""
 
 
@@ -92,6 +93,7 @@ class CameraController(private val appCompatActivity: MainActivity, private val 
         val bitmap = getBitMap(path)
         if (bitmap != null) {
             val item = Item(bitmap, path, null, null)
+            SharedPreferencesController(appCompatActivity).restoreItemState(item)
             appCompatActivity.addMultipleItemToRecyclerView(item)
         }
     }

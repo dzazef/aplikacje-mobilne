@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import pl.dzazef.gallery.*
 import pl.dzazef.gallery.camera.CameraController
 import pl.dzazef.gallery.camera.Utils
+import pl.dzazef.gallery.controllers.SharedPreferencesController
 import pl.dzazef.gallery.data.Item
 import pl.dzazef.gallery.data.sort
 import java.io.File
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var recyclerView : RecyclerView
     lateinit var adapter : RecyclerViewAdapter
     lateinit var cameraController: CameraController
-    val sharedPreferencesManager = SharedPreferencesManager()
+    var itemToEdit : Item? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("DEBUG2", "onCreate")
@@ -104,7 +105,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onClick(p0: View?) {
-                callDetailActivity(itemList[this.adapterPosition])
+                itemToEdit = itemList[this.adapterPosition]
+                callDetailActivity(itemToEdit!!)
             }
         }
     }
@@ -113,7 +115,9 @@ class MainActivity : AppCompatActivity() {
         Log.d("DEBUG2", "onItemClick")
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra(EXTRA_FILE_PATH, item.path)
-        startActivity(intent)
+        intent.putExtra(EXTRA_DESCRIPTION, item.description)
+        intent.putExtra(EXTRA_RATING, item.rating)
+        startActivityForResult(intent, REQUEST_EDIT_ITEM)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -137,6 +141,14 @@ class MainActivity : AppCompatActivity() {
                     REQUEST_TAKE_PHOTO -> {
                         cameraController.galleryAddPic(cameraController.currentPhotoPath)
                         finishAddMultipleItemToRecyclerView()
+                    }
+                    REQUEST_EDIT_ITEM -> {
+                        val description = data!!.getStringExtra(EXTRA_DESCRIPTION)
+                        var rating : Int? = data.getIntExtra(EXTRA_RATING, -1)
+                        if (rating==-1) rating = null
+                        itemToEdit?.description = description
+                        itemToEdit?.rating = rating
+                        SharedPreferencesController(this).saveItemState(itemToEdit)
                     }
                 }
             }
