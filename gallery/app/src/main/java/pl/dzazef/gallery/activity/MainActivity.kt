@@ -144,6 +144,7 @@ class MainActivity : AppCompatActivity() {
                         itemToEdit?.description = data!!.getStringExtra(EXTRA_DESCRIPTION)
                         itemToEdit?.rating = data.getFloatExtra(EXTRA_RATING, 0f)
                         SharedPreferencesController(this).saveItemState(itemToEdit)
+                        finishAddMultipleItemToRecyclerView()
                     }
                 }
             }
