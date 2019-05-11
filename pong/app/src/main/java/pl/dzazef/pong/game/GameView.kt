@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import kotlin.concurrent.thread
 
 class GameView(context: Context, attributeSet: AttributeSet)
     : SurfaceView(context, attributeSet), SurfaceHolder.Callback {
@@ -17,17 +18,24 @@ class GameView(context: Context, attributeSet: AttributeSet)
     private var ball = Ball()
     private var ballSize = 0f
 
+    private val gameThread : GameThread
+
     init {
         holder.addCallback(this)
+        gameThread = GameThread(holder, this)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        gameThread.setRunning(false)
+        gameThread.join()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
+        gameThread.start()
+
         userPaddle.paddleLength = (height.toFloat() / 4)
         userPaddle.top = height.toFloat() / 2 - userPaddle.paddleLength / 2
         userPaddle.bottom = userPaddle.top + height.toFloat() / 4
@@ -61,20 +69,22 @@ class GameView(context: Context, attributeSet: AttributeSet)
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        userPaddle.top = event!!.y + userPaddle.paddleLength / 2
-        userPaddle.bottom = event.y - userPaddle.paddleLength / 2
-        if (userPaddle.bottom < 0) {
-            userPaddle.bottom = 0f
-            userPaddle.top = userPaddle.paddleLength
-        }
-        if (userPaddle.top > height.toFloat()) {
-            userPaddle.bottom = height.toFloat() - userPaddle.paddleLength
-            userPaddle.top = height.toFloat()
+
+        for (i in 0..event!!.pointerCount) {
+            val paddle = if (event!!.x < width / 2) userPaddle else botPaddle
+
+            paddle.top = event.y + paddle.paddleLength / 2
+            paddle.bottom = event.y - paddle.paddleLength / 2
+            if (paddle.bottom < 0) {
+                paddle.bottom = 0f
+                paddle.top = paddle.paddleLength
+            }
+            if (paddle.top > height.toFloat()) {
+                paddle.bottom = height.toFloat() - paddle.paddleLength
+                paddle.top = height.toFloat()
+            }
         }
 
-        val canvas = holder!!.lockCanvas()
-        draw(canvas)
-        holder.unlockCanvasAndPost(canvas)
         return true
     }
 
