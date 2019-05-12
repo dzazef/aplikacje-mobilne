@@ -8,15 +8,13 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import kotlin.concurrent.thread
 
 class GameView(context: Context, attributeSet: AttributeSet)
     : SurfaceView(context, attributeSet), SurfaceHolder.Callback {
 
-    private var userPaddle = Paddle()
-    private var botPaddle = Paddle()
-    private var ball = Ball()
-    private var ballSize = 0f
+    private var leftPaddle = Paddle()
+    private var rightPaddle = Paddle()
+    private var ball = Ball(0f, 0f, 0f)
 
     private val gameThread : GameThread
 
@@ -36,23 +34,19 @@ class GameView(context: Context, attributeSet: AttributeSet)
     override fun surfaceCreated(holder: SurfaceHolder?) {
         gameThread.start()
 
-        userPaddle.paddleLength = (height.toFloat() / 4)
-        userPaddle.top = height.toFloat() / 2 - userPaddle.paddleLength / 2
-        userPaddle.bottom = userPaddle.top + height.toFloat() / 4
-        userPaddle.left = width.toFloat() / 75
-        userPaddle.right = userPaddle.left + width.toFloat() / 35
+        leftPaddle.paddleLength = (height.toFloat() / 4)
+        leftPaddle.top = height.toFloat() / 2 - leftPaddle.paddleLength / 2
+        leftPaddle.bottom = leftPaddle.top + height.toFloat() / 4
+        leftPaddle.left = width.toFloat() / 75
+        leftPaddle.right = leftPaddle.left + width.toFloat() / 35
 
-        botPaddle.paddleLength = (height.toFloat() / 4)
-        botPaddle.top = height.toFloat() / 2 - botPaddle.paddleLength / 2
-        botPaddle.bottom = userPaddle.top + height.toFloat() / 4
-        botPaddle.right = width - width.toFloat() / 75
-        botPaddle.left = botPaddle.right - width.toFloat() / 35
+        rightPaddle.paddleLength = (height.toFloat() / 4)
+        rightPaddle.top = height.toFloat() / 2 - rightPaddle.paddleLength / 2
+        rightPaddle.bottom = rightPaddle.top + height.toFloat() / 4
+        rightPaddle.right = width - width.toFloat() / 75
+        rightPaddle.left = rightPaddle.right - width.toFloat() / 35
 
-        ballSize = height.toFloat() / 10
-        ball.top = height.toFloat() / 2 - ballSize / 2
-        ball.bottom = height.toFloat() / 2 + ballSize / 2
-        ball.left = width.toFloat() / 2 - ballSize / 2
-        ball.right = width.toFloat() / 2 + ballSize / 2
+        ball.reset(height, width)
 
         val canvas = holder!!.lockCanvas()
         draw(canvas)
@@ -62,8 +56,8 @@ class GameView(context: Context, attributeSet: AttributeSet)
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
         val white = Paint().also { it.setARGB(255, 255, 255, 255) }
-        canvas?.drawRect(userPaddle, white) ?: return
-        canvas.drawRect(botPaddle, white)
+        canvas?.drawRect(leftPaddle, white) ?: return
+        canvas.drawRect(rightPaddle, white)
         canvas.drawOval(ball, white)
     }
 
@@ -71,7 +65,7 @@ class GameView(context: Context, attributeSet: AttributeSet)
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
         for (i in 0..event!!.pointerCount) {
-            val paddle = if (event!!.x < width / 2) userPaddle else botPaddle
+            val paddle = if (event.x < width / 2) leftPaddle else rightPaddle
 
             paddle.top = event.y + paddle.paddleLength / 2
             paddle.bottom = event.y - paddle.paddleLength / 2
@@ -86,6 +80,32 @@ class GameView(context: Context, attributeSet: AttributeSet)
         }
 
         return true
+    }
+
+    fun ballUpdate() {
+        if (ball.bottom + ball.dy > height) {
+            ball.dy *= -1
+        }
+        if (ball.top + ball.dy < 0) {
+            ball.dy *= -1
+        }
+        if (ball.right + ball.dx > rightPaddle.left) {
+            if (ball.bottom < rightPaddle.top && ball.top > rightPaddle.bottom) {
+                ball.dx *= -1
+            } else {
+                ball.reset(height, width)
+            }
+        }
+        if (ball.left + ball.dx < leftPaddle.right) {
+            if (ball.bottom < leftPaddle.top && ball.top > leftPaddle.bottom) {
+                ball.dx *= -1
+            } else {
+                ball.reset(height, width)
+            }        }
+        ball.right += ball.dx
+        ball.left += ball.dx
+        ball.top += ball.dy
+        ball.bottom += ball.dy
     }
 
 }

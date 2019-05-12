@@ -21,6 +21,8 @@ class GameThread(private val surfaceHolder: SurfaceHolder,
             startTime = System.nanoTime()
             canvas = null
 
+            gameView.ballUpdate()
+
             try {
                 canvas = surfaceHolder.lockCanvas()
                 synchronized(surfaceHolder) {
