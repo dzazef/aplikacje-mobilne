@@ -9,7 +9,7 @@ data class Ball(var dx : Float, var dy : Float, var size : Float) : RectF() {
         this.bottom = height.toFloat() / 2 + this.size / 2
         this.left = width.toFloat() / 2 - this.size / 2
         this.right = width.toFloat() / 2 + this.size / 2
-        this.dx = 5f
-        this.dy = 5f
+        this.dx = 10f
+        this.dy = 10f
     }
 }
