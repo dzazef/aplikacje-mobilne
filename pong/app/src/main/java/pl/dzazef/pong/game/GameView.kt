@@ -52,13 +52,13 @@ class GameView(context: Context, attributeSet: AttributeSet)
         leftPaddle.bottom = height.toFloat() / 2 + leftPaddle.paddleLength / 2
         leftPaddle.top = leftPaddle.bottom - height.toFloat() / 4
         leftPaddle.left = width.toFloat() / 75
-        leftPaddle.right = leftPaddle.left + width.toFloat() / 35
+        leftPaddle.right = leftPaddle.left + width.toFloat() / 50
 
         rightPaddle.paddleLength = (height.toFloat() / 4)
         rightPaddle.bottom = height.toFloat() / 2 + rightPaddle.paddleLength / 2
         rightPaddle.top = rightPaddle.bottom - height.toFloat() / 4
         rightPaddle.right = width - width.toFloat() / 75
-        rightPaddle.left = rightPaddle.right - width.toFloat() / 35
+        rightPaddle.left = rightPaddle.right - width.toFloat() / 50
 
         ball.reset(height, width)
 
