@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Newton</string>
+    <string name="failed_read_result">Failed to read result</string>
+    <string name="unable_calculation">Unable to perform calculation</string>
+</resources>
