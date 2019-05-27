@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -19,22 +18,39 @@ import pl.dzazef.todo.R
 import pl.dzazef.todo.data.Item
 import pl.dzazef.todo.data.Sort
 import pl.dzazef.todo.data.sort
+import pl.dzazef.todo.db.AppDatabase
+import pl.dzazef.todo.db.DatabaseNotFoundDialogFragment
+import pl.dzazef.todo.db.OpenDatabase
 
 const val MAX_PRIORITY = 9
+const val REQUEST_NEW_ITEM = 9001
 
-class MainActivity : AppCompatActivity(), ActivityInterface {
+class MainActivity : AppCompatActivity(), ActivityInterface, OpenDatabase.OpenDatabaseListener {
+    override fun onDatabaseReady(db: AppDatabase) {
+        this.db = db
+    }
+
+    override fun onDatabaseFail() {
+        DatabaseNotFoundDialogFragment().show(supportFragmentManager, "dialog")
+    }
+
     lateinit var itemList : MutableList<Item>
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter : RecyclerViewAdapter
     private var sortBy = Sort.PRIORITY
+    private var db : AppDatabase? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(pl.dzazef.todo.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
         recyclerView = main_rec
 
         setRecyclerView()
         recyclerView.setOnSwipeToDelete()
+
+        OpenDatabase(this).also {
+            it.setOpenDatabaseListener(this)
+        }
     }
 
     override fun addItemToView(item: Item) {
@@ -124,7 +140,7 @@ class MainActivity : AppCompatActivity(), ActivityInterface {
 
     fun addItemClick(view: View) {
         val intent = Intent(this, AddItemActivity::class.java)
-        startActivityForResult(intent, 9001)
+        startActivityForResult(intent, REQUEST_NEW_ITEM)
     }
 
     fun sortItemsClick(view: View) {
@@ -140,14 +156,15 @@ class MainActivity : AppCompatActivity(), ActivityInterface {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 9001 && resultCode == Activity.RESULT_OK) {
-            addItemToView(Item(
+        if (requestCode == REQUEST_NEW_ITEM && resultCode == Activity.RESULT_OK) {
+            val item = Item(
                 dateTime = data!!.getStringExtra("DATE_TIME"),
                 color = data.getIntExtra("COLOR", 0),
                 message = data.getStringExtra("MESSAGE"),
                 priority = data.getStringExtra("PRIORITY"),
                 icon = data.getIntExtra("ICON", 0)
-            ))
+            )
+            addItemToView(item)
         }
     }
 
