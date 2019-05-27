@@ -26,19 +26,23 @@ const val MAX_PRIORITY = 9
 const val REQUEST_NEW_ITEM = 9001
 
 class MainActivity : AppCompatActivity(), ActivityInterface, OpenDatabase.OpenDatabaseListener {
-    override fun onDatabaseReady(db: AppDatabase) {
-        this.db = db
-    }
 
-    override fun onDatabaseFail() {
-        DatabaseNotFoundDialogFragment().show(supportFragmentManager, "dialog")
-    }
 
     lateinit var itemList : MutableList<Item>
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter : RecyclerViewAdapter
     private var sortBy = Sort.PRIORITY
     private var db : AppDatabase? = null
+
+    override fun onDatabaseReady(db: AppDatabase) {
+        this.db = db
+        val list = db.itemDAO().getAll()
+        list.forEach { addItemToView(it) }
+    }
+
+    override fun onDatabaseFail() {
+        DatabaseNotFoundDialogFragment().show(supportFragmentManager, "dialog")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +54,7 @@ class MainActivity : AppCompatActivity(), ActivityInterface, OpenDatabase.OpenDa
 
         OpenDatabase(this).also {
             it.setOpenDatabaseListener(this)
+            it.load()
         }
     }
 
@@ -117,6 +122,7 @@ class MainActivity : AppCompatActivity(), ActivityInterface, OpenDatabase.OpenDa
                 } else if (v.id == viewPriority.id) {
                     val item = itemList[this.adapterPosition]
                     item.priority = if (item.priority=="$MAX_PRIORITY") "1" else ((item.priority.toInt() + 1) % (MAX_PRIORITY+1)).toString()
+                    updateItemInDB(item)
                     itemList.sort(sortBy)
                     adapter.notifyDataSetChanged()
                     Log.d("INFO1", "test")
@@ -165,6 +171,37 @@ class MainActivity : AppCompatActivity(), ActivityInterface, OpenDatabase.OpenDa
                 icon = data.getIntExtra("ICON", 0)
             )
             addItemToView(item)
+            addItemToDB(item)
+        }
+    }
+
+    private fun addItemToDB(vararg item : Item) {
+        if (db == null) {
+            DatabaseNotFoundDialogFragment().show(supportFragmentManager, "dialog")
+        } else {
+            Thread {
+                db!!.itemDAO().insertAll(*item)
+            }.start()
+        }
+    }
+
+    private fun removeItemFromDB(vararg item : Item) {
+        if (db == null) {
+            DatabaseNotFoundDialogFragment().show(supportFragmentManager, "dialog")
+        } else {
+            Thread {
+                db!!.itemDAO().deleteAll(*item)
+            }.start()
+        }
+    }
+
+    private fun updateItemInDB(item : Item) {
+        if (db == null) {
+            DatabaseNotFoundDialogFragment().show(supportFragmentManager, "dialog")
+        } else {
+            Thread {
+                db!!.itemDAO().updatePriority(item.id, item.priority)
+            }.start()
         }
     }
 
@@ -176,6 +213,7 @@ class MainActivity : AppCompatActivity(), ActivityInterface, OpenDatabase.OpenDa
 
             override fun onSwiped(vh: RecyclerView.ViewHolder, dir: Int) {
                 val pos = vh.adapterPosition
+                removeItemFromDB(itemList[pos])
                 itemList.removeAt(pos)
                 adapter!!.notifyDataSetChanged()
             }

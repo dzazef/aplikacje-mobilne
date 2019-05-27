@@ -19,7 +19,7 @@ interface ItemDAO {
     fun insertAll(items : List<Item>)
 
     @Query("UPDATE items SET priority = :priority WHERE id = :id")
-    fun updatePriority(id : Long, priority : Int)
+    fun updatePriority(id : Long, priority : String)
 
     @Delete
     fun deleteAll(vararg item : Item)
