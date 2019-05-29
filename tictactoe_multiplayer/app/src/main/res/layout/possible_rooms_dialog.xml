@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:id="@+id/room_root" android:orientation="vertical"
+>
+
+    <TextView
+            android:text="Choose room"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/room_txt1" android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="500" android:gravity="center"/>
+    <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+            android:id="@+id/room_rcl"
+            android:layout_marginBottom="8dp" android:layout_weight="100"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_weight="500" android:gravity="center">
+        <Button
+                android:text="Create new room"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/room_btn_new_room"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+        />
+        <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/room_progress"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"/>
+    </LinearLayout>
+</LinearLayout>
