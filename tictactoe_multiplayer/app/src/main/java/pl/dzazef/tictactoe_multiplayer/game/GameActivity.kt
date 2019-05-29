@@ -1,15 +1,21 @@
-package pl.dzazef.tictactoe_multiplayer
+package pl.dzazef.tictactoe_multiplayer.game
 
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.Button
 import android.widget.TableRow
 import kotlinx.android.synthetic.main.activity_game.*
+import pl.dzazef.tictactoe_multiplayer.R
+import pl.dzazef.tictactoe_multiplayer.SIZE
+import pl.dzazef.tictactoe_multiplayer.firebase.db.DatabaseManager
 
 class GameActivity : AppCompatActivity() {
+
+    private val databaseManager = DatabaseManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,6 +23,7 @@ class GameActivity : AppCompatActivity() {
 
         setUpActionBar()
         generateLayout()
+        databaseManager.lookForRooms()
     }
 
     private fun setUpActionBar() {
@@ -40,9 +47,14 @@ class GameActivity : AppCompatActivity() {
                 button.height = buttonSize.toInt()
                 button.width = buttonSize.toInt()
                 button.tag = buttonIndex
+                button.setOnClickListener { onFieldClick(it) }
                 buttonIndex++
                 tableRow.addView(button)
             }
         }
+    }
+
+    private fun onFieldClick(v: View) {
+        Log.i("INFO1", v.tag.toString())
     }
 }
