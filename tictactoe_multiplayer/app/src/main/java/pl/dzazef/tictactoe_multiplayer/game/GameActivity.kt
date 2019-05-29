@@ -93,11 +93,23 @@ class GameActivity : AppCompatActivity(), RoomManager.RoomManagerCallback {
             }
         }
         if (win) userWon(buttons[SIZE*SIZE-SIZE].text.toString())
+
+        //CHECK TIE
+        win = true
+        for (i in 0 until SIZE*SIZE) {
+            if (buttons[i].text.toString() == "")
+                win = false
+        }
+        if (win) userWon("U")
     }
 
     private fun userWon(sign: String) {
-        Toast.makeText(this, "$sign won", Toast.LENGTH_SHORT).show()
-        roomManager.sendScore("UUUUUUUUU")
+        if (sign == "U") {
+            roomManager.sendScore("UUUUUUUUU")
+        } else {
+            Toast.makeText(this, "$sign won", Toast.LENGTH_SHORT).show()
+            roomManager.sendScore("UUUUUUUUU")
+        }
     }
 
     override fun setRound(round: Boolean) {
@@ -173,8 +185,8 @@ class GameActivity : AppCompatActivity(), RoomManager.RoomManagerCallback {
     private fun onFieldClick(idx: Int) {
         if (playing && myRound && buttons[idx].text == "") {
             buttons[idx].text = mySign
+            roomManager.sendScore(getScore())
         }
-        roomManager.sendScore(getScore())
     }
 
     override fun onDestroy() {
